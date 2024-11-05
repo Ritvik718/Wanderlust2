@@ -110,6 +110,7 @@ const sampleListings = [
       coordinates: [-120.12787, 39.267319],
       type: "Point",
     },
+    category: "Camping", // Add the category field here
   },
   {
     title: "Luxury Penthouse with City Views",

@@ -1,46 +1,46 @@
 const express = require("express");
 const router = express.Router();
-const wrapAsync = require("../utils/wrapAsync.js");
-const Listing = require("../models/listing.js");
-const { isLoggedIn, isOwner, validateListing } = require("../middleware.js");
-const listingController = require("../controllers/listings.js");
-const multer = require("multer");
-const { storage } = require("../cloudConfig.js");
-const upload = multer({ storage });
+const wrapAsync = require("../utils/wrapAsync.js"); // Helper function for handling async errors
+const Listing = require("../models/listing.js"); // Your Listing model
+const { isLoggedIn, isOwner, validateListing } = require("../middleware.js"); // Middleware for authentication and validation
+const listingController = require("../controllers/listings.js"); // Your controller for listings
+const multer = require("multer"); // Middleware for handling multipart/form-data
+const { storage } = require("../cloudConfig.js"); // Cloud storage configuration
+const upload = multer({ storage }); // Configure multer to use the defined storage
 
-// Index And Create Route
+// Index and Create Route
 router
   .route("/")
-  .get(wrapAsync(listingController.index))
+  .get(wrapAsync(listingController.index)) // Fetch all listings
   .post(
-    isLoggedIn,
-    upload.single("listing[image]"),
-    validateListing,
-    wrapAsync(listingController.createListing)
+    isLoggedIn, // Ensure user is logged in
+    upload.single("listing[image]"), // Handle image upload
+    validateListing, // Validate the listing data
+    wrapAsync(listingController.createListing) // Create a new listing
   );
 
 // New Route
-router.get("/new", isLoggedIn, listingController.renderNewForm);
+router.get("/new", isLoggedIn, listingController.renderNewForm); // Render form to create a new listing
 
-// Show , Update And Delete Route
+// Show, Update, and Delete Route
 router
   .route("/:id")
-  .get(wrapAsync(listingController.showListing))
+  .get(wrapAsync(listingController.showListing)) // Show a specific listing
   .put(
-    isLoggedIn,
-    isOwner,
-    upload.single("listing[image]"),
-    validateListing,
-    wrapAsync(listingController.updateListing)
+    isLoggedIn, // Ensure user is logged in
+    isOwner, // Ensure user is the owner of the listing
+    upload.single("listing[image]"), // Handle image upload for updates
+    validateListing, // Validate the listing data
+    wrapAsync(listingController.updateListing) // Update the listing
   )
-  .delete(isLoggedIn, isOwner, wrapAsync(listingController.destroyListing));
+  .delete(isLoggedIn, isOwner, wrapAsync(listingController.destroyListing)); // Delete the listing
 
 // Edit Route
 router.get(
   "/:id/edit",
-  isLoggedIn,
-  isOwner,
-  wrapAsync(listingController.renderEditForm)
+  isLoggedIn, // Ensure user is logged in
+  isOwner, // Ensure user is the owner of the listing
+  wrapAsync(listingController.renderEditForm) // Render the edit form for a listing
 );
 
 module.exports = router;
